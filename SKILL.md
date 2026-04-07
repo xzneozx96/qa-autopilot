@@ -1,5 +1,5 @@
 ---
-name: qa-agent
+name: qa-autopilot
 description: >
   Use when the user wants to generate, write, or create end-to-end Playwright tests — whether
   from a user story, acceptance criteria, Jira/Linear ticket, PR description, or just a plain
@@ -9,7 +9,7 @@ description: >
   coverage for this feature" — they don't need to provide formatted ACs for this to apply.
 ---
 
-# qa-agent — Pipeline Orchestrator
+# qa-autopilot — Pipeline Orchestrator
 
 Coordinate the full QA pipeline. Spawn sub-agents for parallel phases. Present human-readable summaries at checkpoints. Handle errors and partial failures.
 
@@ -20,7 +20,7 @@ Coordinate the full QA pipeline. Spawn sub-agents for parallel phases. Present h
 The user invokes with a user story, acceptance criteria, and optional visual references:
 
 ```
-/qa-agent "As a [actor], I can [action] so that [value].
+/qa-autopilot "As a [actor], I can [action] so that [value].
 
 AC:
 - Given [precondition], when [action], then [expected result]

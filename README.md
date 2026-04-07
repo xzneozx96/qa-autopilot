@@ -24,7 +24,7 @@ The skill runs a 7-phase pipeline coordinated by an orchestrator that spawns spe
 ## Architecture
 
 ```
-qa-agent/
+qa-autopilot/
 ├── SKILL.md                    ← Orchestrator (you are here)
 │
 ├── qa-adapter/                 ← Phase 0:   Detect framework, runner, selectors
@@ -144,20 +144,16 @@ Precedence: FAIL > CONCERNS > PASS.
 Copy the skill folder into your Claude skills directory:
 
 ```bash
-cp -r qa-agent ~/.claude/skills/qa-agent
+git clone https://github.com/xzneozx96/qa-autopilot.git
+cp -r qa-autopilot ~/.claude/skills/qa-autopilot
 ```
 
 That's it. Claude Code auto-discovers skills in `~/.claude/skills/` — no restart required.
 
-> **Want the latest version?**
+> **To update later:**
 > ```bash
-> # Clone fresh
-> git clone https://github.com/xzneozx96/qa-autopilot.git
-> cp -r qa-autopilot/qa-agent ~/.claude/skills/qa-agent
->
-> # Or pull updates later
 > cd qa-autopilot && git pull
-> cp -r qa-agent ~/.claude/skills/qa-agent
+> cp -r . ~/.claude/skills/qa-autopilot
 > ```
 
 ---

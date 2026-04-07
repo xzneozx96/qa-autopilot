@@ -72,6 +72,92 @@ The skill runs a 7-phase pipeline coordinated by an orchestrator that spawns spe
 
 QA Autopilot is a **multi-agent pipeline** — not a single monolithic prompt. The orchestrator (`SKILL.md`) spawns specialized sub-agents for each phase, passing typed JSON contracts between them. Reviewer phases use `opus` for deep evaluation; implementation phases use `sonnet` for speed. Parallel phases run as concurrent sub-agents in a single dispatch.
 
+### Pipeline flow
+
+```
+┌─────────────────────────────────────────────────────────────────────────────┐
+│                          QA AUTOPILOT PIPELINE                              │
+└─────────────────────────────────────────────────────────────────────────────┘
+
+  User story + ACs (+ optional Figma / screenshots)
+          │
+          ▼
+  ┌───────────────┐
+  │  qa-adapter   │  Phase 0 — Detect framework, runner, selector coverage
+  └───────┬───────┘
+          │ AdapterContext
+          ▼
+  ┌─────────────────┐
+  │ qa-instrument   │  Phase 0.5 — Add data-testid to components  ← CONDITIONAL
+  └───────┬─────────┘    (only when coverage is "none" or "low")
+          │ InstrumentContext
+          ▼
+  ┌───────────────┐
+  │  qa-intake    │  Phase 1 — Parse requirements → StructuredRequirement
+  └───────┬───────┘
+          │
+          ▼
+  ⏸ Checkpoint A — Block on spec gaps · warn on minor issues
+          │
+          ▼
+  ╔═══════════════════════════════════════════════════════╗
+  ║              Phase 2 — PARALLEL DISCOVERY             ║
+  ║                                                       ║
+  ║  qa-visual ────────── VisualContext  (conditional)    ║
+  ║  qa-explore ────────── CodebaseContext                ║
+  ║  qa-risk (opus) ────── RiskContext                    ║
+  ║  qa-live-explore ────── LiveContext  (conditional)    ║
+  ╚═══════════════════════════════════════════════════════╝
+          │ MergedContext
+          ▼
+  ┌───────────────┐
+  │  qa-design    │  Phase 3 — Design test scenarios (TestScenarios[])
+  └───────┬───────┘
+          │
+          ▼
+  ⏸ Checkpoint C — Hard stop: approve / revise / add scenarios
+          │
+          ▼
+  ┌───────────────┐
+  │  qa-generate  │  Phase 4 — Write Playwright .spec.ts + factories + fixtures
+  └───────┬───────┘
+          │
+          ▼
+  ┌───────────────┐
+  │  qa-execute   │  Phase 4.5 — Run tests · classify failures · self-heal (×3)
+  └───────┬───────┘
+          │ ExecutionResult
+          ▼
+  ┌─────────────────┐
+  │ qa-review-heal  │  Phase 5 — Quality review (6 dimensions) · auto-heal (opus)
+  │    (opus)       │
+  └───────┬─────────┘
+          │ ReviewReport
+          ▼
+  ┌───────────────┐
+  │  qa-trace     │  Phase 6 — Traceability matrix · gate decision (opus)
+  │   (opus)      │
+  └───────┬───────┘
+          │
+          ▼
+  ⏸ Checkpoint D — Hard stop: PASS / CONCERNS / FAIL + user approval
+          │
+          ▼ (on APPROVE only)
+  ╔═══════════════════════════════════════════════════════╗
+  ║              Phase 7 — PARALLEL OUTPUT                ║
+  ║                                                       ║
+  ║  qa-ci ────────── .github/workflows/e2e-tests.yml     ║
+  ║  qa-selective ─── package.json scripts                ║
+  ╚═══════════════════════════════════════════════════════╝
+          │
+          ▼
+      git commit
+```
+
+> **⏸ Checkpoints** pause the pipeline for your input. Phases 2 and 7 run as concurrent sub-agents in a single dispatch. `opus` is used only where evaluation judgement matters — risk scoring, quality review, and gate decision.
+
+---
+
 ```
 qa-autopilot/
 ├── SKILL.md                    ← Orchestrator: coordinates the full pipeline

@@ -1,0 +1,115 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "adapter-output.schema.json",
+  "title": "AdapterContext",
+  "description": "Output contract for the adapter skill — describes the detected tech stack and test infrastructure context.",
+  "type": "object",
+  "properties": {
+    "framework": {
+      "type": "string",
+      "description": "Frontend framework detected (e.g. React, Vue, Angular)"
+    },
+    "backendFramework": {
+      "type": "string",
+      "description": "Backend framework detected (e.g. Express, FastAPI, Rails)"
+    },
+    "componentLibrary": {
+      "type": "string",
+      "description": "UI component library in use (e.g. shadcn/ui, MUI, Ant Design)"
+    },
+    "packageManager": {
+      "type": "string",
+      "enum": ["npm", "yarn", "pnpm", "bun"],
+      "description": "Package manager used in the project"
+    },
+    "apiClient": {
+      "type": "string",
+      "description": "HTTP/API client used (e.g. axios, fetch, ky)"
+    },
+    "authPattern": {
+      "type": "string",
+      "description": "Authentication pattern detected (e.g. JWT, session cookie, OAuth)"
+    },
+    "selectorStrategy": {
+      "type": "object",
+      "description": "Assessment of available selector strategies for Playwright",
+      "properties": {
+        "dataTestIdCoverage": {
+          "type": "string",
+          "enum": ["high", "medium", "low", "none"],
+          "description": "Coverage level of data-testid attributes across the codebase"
+        },
+        "ariaRoleCoverage": {
+          "type": "string",
+          "enum": ["high", "medium", "low"],
+          "description": "Coverage level of ARIA role attributes"
+        },
+        "recommendation": {
+          "type": "string",
+          "description": "Recommended selector strategy for generated tests"
+        }
+      },
+      "required": ["dataTestIdCoverage", "ariaRoleCoverage", "recommendation"]
+    },
+    "existingTestSetup": {
+      "type": "object",
+      "description": "State of existing Playwright test infrastructure",
+      "properties": {
+        "playwrightInstalled": {
+          "type": "boolean",
+          "description": "Whether Playwright is installed as a dependency"
+        },
+        "configExists": {
+          "type": "boolean",
+          "description": "Whether a playwright.config file exists"
+        },
+        "existingSpecCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Number of existing Playwright spec files found"
+        },
+        "conventions": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Detected test conventions (e.g. naming patterns, folder structure)"
+        }
+      },
+      "required": ["playwrightInstalled", "configExists", "existingSpecCount", "conventions"]
+    },
+    "ciPlatform": {
+      "type": "string",
+      "description": "CI/CD platform detected (e.g. GitHub Actions, CircleCI, GitLab CI)"
+    },
+    "baseUrl": {
+      "type": "string",
+      "description": "Base URL for the application under test"
+    },
+    "playwrightMcpAvailable": {
+      "type": "boolean",
+      "description": "Whether Playwright MCP tools are available in the current session"
+    },
+    "devServerCommand": {
+      "type": ["string", "null"],
+      "description": "Command to start the dev server (e.g. 'pnpm dev'), or null if not found"
+    },
+    "devServerUrl": {
+      "type": ["string", "null"],
+      "description": "URL of the running or expected dev server (e.g. 'http://localhost:5173'), or null"
+    }
+  },
+  "required": [
+    "framework",
+    "backendFramework",
+    "componentLibrary",
+    "packageManager",
+    "apiClient",
+    "authPattern",
+    "selectorStrategy",
+    "existingTestSetup",
+    "ciPlatform",
+    "baseUrl",
+    "playwrightMcpAvailable",
+    "devServerCommand",
+    "devServerUrl"
+  ]
+}

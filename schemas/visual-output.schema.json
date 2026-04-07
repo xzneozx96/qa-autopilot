@@ -1,0 +1,121 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "visual-output.schema.json",
+  "title": "VisualContext",
+  "description": "Output contract for the visual skill — UI elements, states, flows extracted from Figma designs or screenshots.",
+  "type": "object",
+  "properties": {
+    "source": {
+      "type": "string",
+      "enum": ["figma", "screenshot", "both"],
+      "description": "Which input source was used to extract UI context"
+    },
+    "pages": {
+      "type": "array",
+      "description": "Pages (screens) relevant to the requirement",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the page or screen"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Direct URL to this page in Figma"
+          },
+          "elements": {
+            "type": "array",
+            "description": "Interactive or notable UI elements on this page",
+            "items": {
+              "type": "object",
+              "properties": {
+                "type": {
+                  "type": "string",
+                  "enum": ["button", "input", "link", "form", "dropdown", "modal", "other"],
+                  "description": "Element type category"
+                },
+                "label": {
+                  "type": "string",
+                  "description": "Visible label or accessible name of the element"
+                },
+                "suggestedTestId": {
+                  "type": "string",
+                  "description": "Suggested data-testid value for this element"
+                },
+                "ariaRole": {
+                  "type": "string",
+                  "description": "ARIA role to use when selecting this element in tests"
+                },
+                "confidence": {
+                  "type": "string",
+                  "enum": ["exact", "inferred"],
+                  "description": "exact for Figma, inferred for screenshot"
+                }
+              },
+              "required": ["type", "label", "suggestedTestId"]
+            }
+          },
+          "states": {
+            "type": "array",
+            "description": "UI states that need to be tested for this page",
+            "items": {
+              "type": "object",
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "description": "Human-readable name of the state"
+                },
+                "type": {
+                  "type": "string",
+                  "enum": ["loading", "error", "empty", "success", "disabled"],
+                  "description": "Category of the UI state"
+                },
+                "triggerCondition": {
+                  "type": "string",
+                  "description": "What causes this state to appear"
+                }
+              },
+              "required": ["name", "type", "triggerCondition"]
+            }
+          }
+        },
+        "required": ["name", "elements", "states"]
+      }
+    },
+    "flows": {
+      "type": "array",
+      "description": "Multi-page user flows identified in the design",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the flow (e.g. 'Checkout flow')"
+          },
+          "steps": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "Ordered list of steps in the flow"
+          },
+          "startPage": {
+            "type": "string",
+            "description": "Name of the page where the flow begins"
+          },
+          "endPage": {
+            "type": "string",
+            "description": "Name of the page where the flow ends"
+          }
+        },
+        "required": ["name", "steps", "startPage", "endPage"]
+      }
+    },
+    "breakpoints": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Responsive breakpoints defined in the design (e.g. '375px', '768px', '1440px')"
+    }
+  },
+  "required": ["source", "pages", "flows", "breakpoints"]
+}

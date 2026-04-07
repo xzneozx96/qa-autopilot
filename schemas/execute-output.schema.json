@@ -1,0 +1,103 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "execute-output.schema.json",
+  "title": "ExecutionResult",
+  "description": "Output contract for the execute skill — test run results including heal actions and unresolved failures.",
+  "type": "object",
+  "properties": {
+    "totalTests": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of tests executed"
+    },
+    "passed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of tests that passed (including after healing)"
+    },
+    "failed": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Number of tests that still fail after all heal attempts"
+    },
+    "healIterations": {
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3,
+      "description": "Number of heal-and-rerun iterations performed"
+    },
+    "heals": {
+      "type": "array",
+      "description": "Successful heal actions applied to test files",
+      "items": {
+        "type": "object",
+        "properties": {
+          "testTitle": {
+            "type": "string",
+            "description": "Title of the healed test"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["selector_miss", "data_shape", "auth_setup", "timing"],
+            "description": "Failure category that was healed"
+          },
+          "file": {
+            "type": "string",
+            "description": "Test file that was modified"
+          },
+          "fixDescription": {
+            "type": "string",
+            "description": "Human-readable description of the fix applied"
+          },
+          "iteration": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 3,
+            "description": "Which iteration this heal occurred in"
+          }
+        },
+        "required": ["testTitle", "category", "file", "fixDescription", "iteration"]
+      }
+    },
+    "unresolvedFailures": {
+      "type": "array",
+      "description": "Failures that could not be healed — become open risks in the gate",
+      "items": {
+        "type": "object",
+        "properties": {
+          "testTitle": {
+            "type": "string",
+            "description": "Title of the failing test"
+          },
+          "category": {
+            "type": "string",
+            "enum": ["selector_miss", "data_shape", "auth_setup", "timing", "logic", "unknown"],
+            "description": "Failure category"
+          },
+          "errorMessage": {
+            "type": "string",
+            "description": "Truncated error message from the last run"
+          },
+          "file": {
+            "type": "string",
+            "description": "Test file containing the failure"
+          },
+          "line": {
+            "type": "integer",
+            "description": "Line number of the failure"
+          },
+          "escalationReason": {
+            "type": "string",
+            "description": "Why this failure was not auto-healed (e.g., 'logic failure', 'max iterations reached')"
+          }
+        },
+        "required": ["testTitle", "category", "errorMessage", "file", "escalationReason"]
+      }
+    },
+    "allPassed": {
+      "type": "boolean",
+      "description": "True if all tests pass (after healing). Shortcut for failed === 0."
+    }
+  },
+  "required": ["totalTests", "passed", "failed", "healIterations", "heals", "unresolvedFailures", "allPassed"]
+}

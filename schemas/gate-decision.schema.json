@@ -1,0 +1,107 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "gate-decision.schema.json",
+  "title": "GateDecision",
+  "description": "Output contract for the gate skill — final quality gate decision including traceability, coverage, and risk summary.",
+  "type": "object",
+  "properties": {
+    "decision": {
+      "type": "string",
+      "enum": ["PASS", "CONCERNS", "FAIL"],
+      "description": "Overall gate outcome: PASS means ready to ship, CONCERNS means proceed with caution, FAIL means blocked"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "ISO 8601 timestamp of when the gate decision was made"
+    },
+    "traceabilityMatrix": {
+      "type": "array",
+      "description": "Per-criterion traceability showing which tests cover each acceptance criterion",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterionId": {
+            "type": "string",
+            "description": "ID of the acceptance criterion"
+          },
+          "criterion": {
+            "type": "string",
+            "description": "Human-readable description of the criterion"
+          },
+          "priority": {
+            "type": "string",
+            "description": "Priority level of the criterion"
+          },
+          "tests": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "IDs or titles of tests that cover this criterion"
+          },
+          "covered": {
+            "type": "boolean",
+            "description": "Whether this criterion has at least one covering test"
+          },
+          "waiverReason": {
+            "type": "string",
+            "description": "Reason this criterion is intentionally not covered, if applicable"
+          }
+        },
+        "required": ["criterionId", "criterion", "priority", "tests", "covered"]
+      }
+    },
+    "coverageRate": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 1,
+      "description": "Fraction of acceptance criteria covered by at least one test (0.0–1.0)"
+    },
+    "reviewScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Overall score from the review skill passed through to the gate report"
+    },
+    "openRisks": {
+      "type": "array",
+      "description": "Risks that remain unresolved at gate time",
+      "items": {
+        "type": "object",
+        "properties": {
+          "score": {
+            "type": "number",
+            "description": "Risk score"
+          },
+          "title": {
+            "type": "string",
+            "description": "Short title of the risk"
+          },
+          "category": {
+            "type": "string",
+            "description": "Risk category (e.g. SEC, PERF)"
+          }
+        },
+        "required": ["score", "title", "category"]
+      }
+    },
+    "recommendations": {
+      "type": "array",
+      "items": { "type": "string" },
+      "description": "Actionable recommendations for the team before or after shipping"
+    },
+    "summary": {
+      "type": "string",
+      "description": "Narrative summary of the gate decision for display in CI output or PR comments"
+    }
+  },
+  "required": [
+    "decision",
+    "timestamp",
+    "traceabilityMatrix",
+    "coverageRate",
+    "reviewScore",
+    "openRisks",
+    "recommendations",
+    "summary"
+  ]
+}

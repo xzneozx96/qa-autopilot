@@ -1,0 +1,178 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "explore-output.schema.json",
+  "title": "CodebaseContext",
+  "description": "Output contract for the explore skill — elements discovered in the codebase relevant to test generation.",
+  "type": "object",
+  "properties": {
+    "selectors": {
+      "type": "array",
+      "description": "UI element selectors discovered in the codebase",
+      "items": {
+        "type": "object",
+        "properties": {
+          "element": {
+            "type": "string",
+            "description": "Human-readable name or description of the element"
+          },
+          "selector": {
+            "type": "string",
+            "description": "Playwright-compatible selector string"
+          },
+          "quality": {
+            "type": "string",
+            "enum": ["excellent", "good", "acceptable", "poor"],
+            "description": "Reliability and specificity rating of the selector"
+          },
+          "file": {
+            "type": "string",
+            "description": "Source file where the element was found"
+          },
+          "line": {
+            "type": "integer",
+            "minimum": 1,
+            "description": "Line number in the source file"
+          }
+        },
+        "required": ["element", "selector", "quality", "file", "line"]
+      }
+    },
+    "apiRoutes": {
+      "type": "array",
+      "description": "API routes discovered for network interception and mocking",
+      "items": {
+        "type": "object",
+        "properties": {
+          "method": {
+            "type": "string",
+            "description": "HTTP method (GET, POST, PUT, PATCH, DELETE, etc.)"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL path or pattern for the route"
+          },
+          "requestShape": {
+            "type": "string",
+            "description": "Description or type name of the expected request body shape"
+          },
+          "responseShape": {
+            "type": "string",
+            "description": "Description or type name of the expected response shape"
+          },
+          "file": {
+            "type": "string",
+            "description": "Source file where the route is defined"
+          }
+        },
+        "required": ["method", "url", "file"]
+      }
+    },
+    "existingFactories": {
+      "type": "array",
+      "description": "Test data factories discovered in the codebase",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the factory function or class"
+          },
+          "entity": {
+            "type": "string",
+            "description": "The data entity or model this factory produces"
+          },
+          "file": {
+            "type": "string",
+            "description": "Source file where the factory is defined"
+          },
+          "overrides": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "List of fields that can be overridden when calling the factory"
+          }
+        },
+        "required": ["name", "entity", "file", "overrides"]
+      }
+    },
+    "existingFixtures": {
+      "type": "array",
+      "description": "Playwright fixtures discovered in the codebase",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the fixture"
+          },
+          "capabilities": {
+            "type": "array",
+            "items": { "type": "string" },
+            "description": "What the fixture sets up or provides"
+          },
+          "file": {
+            "type": "string",
+            "description": "Source file where the fixture is defined"
+          }
+        },
+        "required": ["name", "capabilities", "file"]
+      }
+    },
+    "authPattern": {
+      "type": "object",
+      "description": "Authentication pattern and helpers discovered in the codebase",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["cookie", "jwt", "oauth", "session", "unknown"],
+          "description": "The authentication mechanism used"
+        },
+        "loginEndpoint": {
+          "type": "string",
+          "description": "API endpoint used to authenticate"
+        },
+        "apiShortcut": {
+          "type": "string",
+          "description": "Playwright API route shortcut for bypassing the UI login flow"
+        },
+        "storageStateFile": {
+          "type": "string",
+          "description": "Path to a saved storage state file for session reuse"
+        }
+      },
+      "required": ["type"]
+    },
+    "testConventions": {
+      "type": "object",
+      "description": "Conventions inferred from existing test files",
+      "properties": {
+        "namingPattern": {
+          "type": "string",
+          "description": "Detected naming pattern for spec files (e.g. *.spec.ts)"
+        },
+        "folderStructure": {
+          "type": "string",
+          "description": "Detected folder structure for test files"
+        },
+        "tagUsage": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Tags or annotations in use across existing specs"
+        },
+        "existingSpecCount": {
+          "type": "integer",
+          "minimum": 0,
+          "description": "Total number of existing spec files found"
+        }
+      },
+      "required": ["namingPattern", "folderStructure", "tagUsage", "existingSpecCount"]
+    }
+  },
+  "required": [
+    "selectors",
+    "apiRoutes",
+    "existingFactories",
+    "existingFixtures",
+    "authPattern",
+    "testConventions"
+  ]
+}

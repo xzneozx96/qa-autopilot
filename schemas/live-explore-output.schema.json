@@ -1,0 +1,148 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "live-explore-output.schema.json",
+  "title": "LiveContext",
+  "description": "Output contract for the live-explore skill — runtime-discovered application context from Playwright MCP inspection.",
+  "type": "object",
+  "properties": {
+    "domSnapshots": {
+      "type": "array",
+      "description": "Accessible name trees for feature-relevant components",
+      "items": {
+        "type": "object",
+        "properties": {
+          "componentName": {
+            "type": "string",
+            "description": "Human-readable name of the inspected component area"
+          },
+          "url": {
+            "type": "string",
+            "description": "URL where the snapshot was taken"
+          },
+          "elements": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "role": { "type": "string" },
+                "accessibleName": { "type": "string" },
+                "nameSource": {
+                  "type": "string",
+                  "enum": ["aria-label", "title", "content", "inherited"],
+                  "description": "How the accessible name is computed"
+                },
+                "attributes": {
+                  "type": "object",
+                  "description": "Key attributes present (data-testid, aria-label, title, etc.)"
+                },
+                "parentRole": {
+                  "type": ["string", "null"],
+                  "description": "Role of the parent interactive element, if nested"
+                },
+                "matchCount": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "How many elements share this accessible name on the page"
+                }
+              },
+              "required": ["role", "accessibleName", "nameSource", "matchCount"]
+            }
+          }
+        },
+        "required": ["componentName", "url", "elements"]
+      }
+    },
+    "idbSchemas": {
+      "type": "object",
+      "description": "IndexedDB store schemas keyed by database name, then store name",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": {
+          "type": "object",
+          "properties": {
+            "keyPath": { "type": ["string", "null"] },
+            "autoIncrement": { "type": "boolean" },
+            "keyType": {
+              "type": "string",
+              "enum": ["inline", "out-of-line"]
+            },
+            "fields": {
+              "type": "array",
+              "items": { "type": "string" },
+              "description": "Field names from a sample record"
+            },
+            "indexNames": {
+              "type": "array",
+              "items": { "type": "string" }
+            }
+          },
+          "required": ["keyPath", "autoIncrement", "keyType", "fields"]
+        }
+      }
+    },
+    "authBypass": {
+      "type": "object",
+      "description": "Auth bypass mechanism discovered at runtime",
+      "properties": {
+        "method": {
+          "type": ["string", "null"],
+          "enum": ["sessionStorage", "localStorage", "cookie", null],
+          "description": "Storage mechanism used for auth bypass"
+        },
+        "key": {
+          "type": ["string", "null"],
+          "description": "The storage key (e.g. 'shadowlearn_trial')"
+        },
+        "value": {
+          "type": ["string", "null"],
+          "description": "The value to set (e.g. 'trial')"
+        },
+        "snippet": {
+          "type": "string",
+          "description": "Complete page.addInitScript() code to bypass auth in tests"
+        }
+      },
+      "required": ["method", "snippet"]
+    },
+    "verifiedSelectors": {
+      "type": "array",
+      "description": "Selectors verified against the live DOM for uniqueness",
+      "items": {
+        "type": "object",
+        "properties": {
+          "element": {
+            "type": "string",
+            "description": "Human-readable element description"
+          },
+          "staticSelector": {
+            "type": "string",
+            "description": "Original selector from static analysis"
+          },
+          "liveMatchCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of elements matching the static selector in live DOM"
+          },
+          "verifiedSelector": {
+            "type": "string",
+            "description": "Scoped/disambiguated selector that matches exactly 1 element"
+          },
+          "verifiedUnique": {
+            "type": "boolean",
+            "description": "Whether the verified selector matches exactly 1 element"
+          }
+        },
+        "required": ["element", "staticSelector", "liveMatchCount", "verifiedSelector", "verifiedUnique"]
+      }
+    },
+    "appUrl": {
+      "type": "string",
+      "description": "Base URL used for live exploration"
+    },
+    "degraded": {
+      "type": "boolean",
+      "description": "True if MCP was unavailable or app was not running — all other fields may be empty"
+    }
+  },
+  "required": ["domSnapshots", "idbSchemas", "authBypass", "verifiedSelectors", "appUrl", "degraded"]
+}

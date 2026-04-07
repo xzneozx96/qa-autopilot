@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "review-output.schema.json",
+  "title": "ReviewReport",
+  "description": "Output contract for the review skill — quality assessment and auto-heal results for generated test code.",
+  "type": "object",
+  "properties": {
+    "overallScore": {
+      "type": "number",
+      "minimum": 0,
+      "maximum": 100,
+      "description": "Aggregate quality score across all review dimensions (0–100)"
+    },
+    "dimensions": {
+      "type": "array",
+      "description": "Per-dimension breakdown of the quality review",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Name of the review dimension (e.g. 'Selector Quality', 'Assertion Coverage')"
+          },
+          "score": {
+            "type": "number",
+            "minimum": 0,
+            "maximum": 100,
+            "description": "Score for this dimension (0–100)"
+          },
+          "issues": {
+            "type": "array",
+            "description": "Issues found within this dimension",
+            "items": {
+              "type": "object",
+              "properties": {
+                "severity": {
+                  "type": "string",
+                  "enum": ["critical", "warning", "info"],
+                  "description": "Severity level of the issue"
+                },
+                "description": {
+                  "type": "string",
+                  "description": "Human-readable description of the issue"
+                },
+                "file": {
+                  "type": "string",
+                  "description": "File in which the issue was found"
+                },
+                "line": {
+                  "type": "integer",
+                  "minimum": 1,
+                  "description": "Line number where the issue occurs"
+                },
+                "autoHealed": {
+                  "type": "boolean",
+                  "description": "Whether the review skill automatically fixed this issue"
+                },
+                "healAction": {
+                  "type": "string",
+                  "description": "Description of the automated fix applied, if autoHealed is true"
+                }
+              },
+              "required": ["severity", "description", "file", "line", "autoHealed"]
+            }
+          }
+        },
+        "required": ["name", "score", "issues"]
+      }
+    },
+    "healedCount": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of issues that were automatically healed"
+    },
+    "remainingIssues": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of issues that remain after auto-healing"
+    },
+    "passesQualityGate": {
+      "type": "boolean",
+      "description": "Whether the generated tests meet the minimum quality threshold to proceed"
+    }
+  },
+  "required": [
+    "overallScore",
+    "dimensions",
+    "healedCount",
+    "remainingIssues",
+    "passesQualityGate"
+  ]
+}

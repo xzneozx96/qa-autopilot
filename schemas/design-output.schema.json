@@ -1,0 +1,145 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "design-output.schema.json",
+  "title": "TestScenarios",
+  "description": "Output contract for the design skill — an array of test scenarios ready for code generation.",
+  "type": "array",
+  "items": {
+    "title": "TestScenario",
+    "type": "object",
+    "properties": {
+      "id": {
+        "type": "string",
+        "description": "Unique identifier for this test scenario"
+      },
+      "title": {
+        "type": "string",
+        "description": "Human-readable title for the scenario (used as the test description)"
+      },
+      "acceptanceCriteriaIds": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "IDs of the acceptance criteria this scenario covers",
+        "minItems": 1
+      },
+      "type": {
+        "type": "string",
+        "enum": ["happy", "unhappy", "edge", "error", "nfr"],
+        "description": "Classification of the scenario type"
+      },
+      "priority": {
+        "type": "string",
+        "enum": ["P0", "P1", "P2", "P3"],
+        "description": "Test execution priority"
+      },
+      "tags": {
+        "type": "array",
+        "items": { "type": "string" },
+        "description": "Playwright tags to annotate the test with (e.g. '@smoke', '@regression')"
+      },
+      "preconditions": {
+        "type": "array",
+        "description": "Setup steps required before the scenario can run",
+        "items": {
+          "type": "object",
+          "properties": {
+            "description": {
+              "type": "string",
+              "description": "Human-readable description of what this precondition sets up"
+            },
+            "setupMethod": {
+              "type": "string",
+              "enum": ["factory", "api", "fixture", "navigation"],
+              "description": "How this precondition is fulfilled"
+            },
+            "factoryName": {
+              "type": "string",
+              "description": "Name of the factory to call when setupMethod is 'factory'"
+            },
+            "apiEndpoint": {
+              "type": "string",
+              "description": "API endpoint to call when setupMethod is 'api'"
+            }
+          },
+          "required": ["description", "setupMethod"]
+        }
+      },
+      "steps": {
+        "type": "array",
+        "description": "Ordered list of actions the test will perform",
+        "items": {
+          "type": "object",
+          "properties": {
+            "action": {
+              "type": "string",
+              "description": "Description of the action to perform (e.g. 'click the submit button')"
+            },
+            "selector": {
+              "type": "string",
+              "description": "Playwright selector for the target element"
+            },
+            "selectorQuality": {
+              "type": "string",
+              "description": "Quality rating of the selector (excellent/good/acceptable/poor)"
+            },
+            "networkIntercept": {
+              "type": "object",
+              "description": "Network request to intercept or assert during this step",
+              "properties": {
+                "method": {
+                  "type": "string",
+                  "description": "HTTP method of the request to intercept"
+                },
+                "url": {
+                  "type": "string",
+                  "description": "URL pattern of the request to intercept"
+                },
+                "expectedStatus": {
+                  "type": "integer",
+                  "description": "Expected HTTP response status code"
+                }
+              },
+              "required": ["method", "url", "expectedStatus"]
+            }
+          },
+          "required": ["action"]
+        },
+        "minItems": 1
+      },
+      "expectedResults": {
+        "type": "array",
+        "description": "Assertions to verify after the steps complete",
+        "items": {
+          "type": "object",
+          "properties": {
+            "assertion": {
+              "type": "string",
+              "description": "Human-readable description of what to assert"
+            },
+            "selector": {
+              "type": "string",
+              "description": "Playwright selector for the element to assert against"
+            },
+            "value": {
+              "type": "string",
+              "description": "Expected value to assert (text content, attribute value, etc.)"
+            }
+          },
+          "required": ["assertion"]
+        },
+        "minItems": 1
+      }
+    },
+    "required": [
+      "id",
+      "title",
+      "acceptanceCriteriaIds",
+      "type",
+      "priority",
+      "tags",
+      "preconditions",
+      "steps",
+      "expectedResults"
+    ]
+  }
+}

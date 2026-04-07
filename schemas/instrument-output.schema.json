@@ -1,0 +1,100 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "instrument-output.schema.json",
+  "title": "InstrumentContext",
+  "description": "Output contract for the qa-instrument skill — describes which components were instrumented and what data-testid attributes were added.",
+  "type": "object",
+  "properties": {
+    "skipped": {
+      "type": "boolean",
+      "description": "True if instrumentation was skipped (user declined, no components found, or coverage was already sufficient)"
+    },
+    "skipReason": {
+      "type": ["string", "null"],
+      "description": "Why instrumentation was skipped. Null when skipped is false."
+    },
+    "featurePrefix": {
+      "type": ["string", "null"],
+      "description": "The kebab-case feature prefix used for all data-testid values (e.g. 'admin-login'). Null when skipped."
+    },
+    "instrumentedFiles": {
+      "type": "array",
+      "description": "Files that were successfully modified",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Relative path to the modified file"
+          },
+          "addedCount": {
+            "type": "integer",
+            "minimum": 0,
+            "description": "Number of data-testid attributes added to this file"
+          },
+          "addedTestIds": {
+            "type": "array",
+            "description": "List of data-testid values added in this file",
+            "items": { "type": "string" }
+          }
+        },
+        "required": ["path", "addedCount", "addedTestIds"]
+      }
+    },
+    "skippedFiles": {
+      "type": "array",
+      "description": "Files that were identified but could not be instrumented",
+      "items": {
+        "type": "object",
+        "properties": {
+          "path": {
+            "type": "string",
+            "description": "Relative path to the file"
+          },
+          "reason": {
+            "type": "string",
+            "description": "Why this file was skipped (e.g. 'write failed', 'no instrumentable elements found')"
+          }
+        },
+        "required": ["path", "reason"]
+      }
+    },
+    "totalTestIdsAdded": {
+      "type": "integer",
+      "minimum": 0,
+      "description": "Total number of data-testid attributes added across all files"
+    },
+    "commitSha": {
+      "type": ["string", "null"],
+      "description": "Git commit SHA of the instrumentation commit. Null if commit failed or was skipped."
+    },
+    "updatedSelectorStrategy": {
+      "type": ["object", "null"],
+      "description": "Updated selectorStrategy block to replace in AdapterContext. Null when skipped.",
+      "properties": {
+        "dataTestIdCoverage": {
+          "type": "string",
+          "enum": ["high", "medium", "low", "none"]
+        },
+        "ariaRoleCoverage": {
+          "type": "string",
+          "enum": ["high", "medium", "low"]
+        },
+        "recommendation": {
+          "type": "string"
+        }
+      },
+      "required": ["dataTestIdCoverage", "ariaRoleCoverage", "recommendation"]
+    }
+  },
+  "required": [
+    "skipped",
+    "skipReason",
+    "featurePrefix",
+    "instrumentedFiles",
+    "skippedFiles",
+    "totalTestIdsAdded",
+    "commitSha",
+    "updatedSelectorStrategy"
+  ]
+}

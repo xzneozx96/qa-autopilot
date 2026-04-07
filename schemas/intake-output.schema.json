@@ -1,0 +1,128 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "intake-output.schema.json",
+  "title": "StructuredRequirement",
+  "description": "Output contract for the intake skill — a parsed and structured representation of a user-provided requirement.",
+  "type": "object",
+  "properties": {
+    "id": {
+      "type": "string",
+      "description": "Unique identifier for this requirement"
+    },
+    "userStory": {
+      "type": "object",
+      "description": "Structured decomposition of the user story",
+      "properties": {
+        "actor": {
+          "type": "string",
+          "description": "The persona or role performing the action"
+        },
+        "action": {
+          "type": "string",
+          "description": "What the actor wants to do"
+        },
+        "value": {
+          "type": "string",
+          "description": "The benefit or outcome the actor wants"
+        },
+        "raw": {
+          "type": "string",
+          "description": "Original unprocessed user story text"
+        }
+      },
+      "required": ["actor", "action", "value", "raw"]
+    },
+    "acceptanceCriteria": {
+      "type": "array",
+      "description": "List of acceptance criteria derived from the requirement",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for this criterion"
+          },
+          "precondition": {
+            "type": "string",
+            "description": "State of the system before the action (Given)"
+          },
+          "action": {
+            "type": "string",
+            "description": "The action being performed (When)"
+          },
+          "expectedResult": {
+            "type": "string",
+            "description": "The expected outcome (Then)"
+          },
+          "type": {
+            "type": "string",
+            "enum": ["functional", "nfr"],
+            "description": "Whether this is a functional requirement or non-functional requirement"
+          },
+          "raw": {
+            "type": "string",
+            "description": "Original unprocessed criterion text"
+          }
+        },
+        "required": ["id", "precondition", "action", "expectedResult", "type", "raw"]
+      }
+    },
+    "nfrCriteria": {
+      "type": "array",
+      "description": "Non-functional requirements extracted from the requirement",
+      "items": {
+        "type": "object",
+        "properties": {
+          "category": {
+            "type": "string",
+            "enum": ["security", "performance", "reliability", "maintainability"],
+            "description": "NFR category"
+          },
+          "requirement": {
+            "type": "string",
+            "description": "Description of the non-functional requirement"
+          },
+          "threshold": {
+            "type": "string",
+            "description": "Measurable threshold or target value, if applicable"
+          }
+        },
+        "required": ["category", "requirement"]
+      }
+    },
+    "gaps": {
+      "type": "array",
+      "description": "Identified gaps or ambiguities in the requirement",
+      "items": {
+        "type": "object",
+        "properties": {
+          "description": {
+            "type": "string",
+            "description": "Description of the gap or ambiguity"
+          },
+          "severity": {
+            "type": "string",
+            "enum": ["blocking", "warning"],
+            "description": "How critical the gap is to proceeding"
+          },
+          "suggestion": {
+            "type": "string",
+            "description": "Suggested clarification or resolution"
+          }
+        },
+        "required": ["description", "severity", "suggestion"]
+      }
+    },
+    "complexity": {
+      "type": "string",
+      "enum": ["low", "medium", "high"],
+      "description": "Estimated complexity of testing this requirement"
+    },
+    "figmaUrl": {
+      "type": "string",
+      "format": "uri",
+      "description": "Optional Figma design URL associated with this requirement"
+    }
+  },
+  "required": ["id", "userStory", "acceptanceCriteria", "nfrCriteria", "gaps", "complexity"]
+}

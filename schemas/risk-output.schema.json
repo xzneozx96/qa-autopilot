@@ -1,0 +1,119 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "risk-output.schema.json",
+  "title": "RiskContext",
+  "description": "Output contract for the risk skill — a scored risk assessment for a requirement.",
+  "type": "object",
+  "properties": {
+    "score": {
+      "type": "number",
+      "description": "Composite risk score (product of probability and impact)"
+    },
+    "probability": {
+      "type": "integer",
+      "enum": [1, 2, 3],
+      "description": "Likelihood of failure: 1=low, 2=medium, 3=high"
+    },
+    "impact": {
+      "type": "integer",
+      "enum": [1, 2, 3],
+      "description": "Business/user impact if failure occurs: 1=low, 2=medium, 3=high"
+    },
+    "priority": {
+      "type": "string",
+      "enum": ["P0", "P1", "P2", "P3"],
+      "description": "Derived test priority level"
+    },
+    "categories": {
+      "type": "array",
+      "description": "Risk categories applicable to this requirement",
+      "items": {
+        "type": "string",
+        "enum": ["TECH", "SEC", "PERF", "DATA", "BUS", "OPS"]
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "action": {
+      "type": "string",
+      "enum": ["BLOCK", "MITIGATE", "MONITOR", "DOCUMENT"],
+      "description": "Recommended action to take based on the risk level"
+    },
+    "justification": {
+      "type": "string",
+      "description": "Human-readable explanation of the risk assessment"
+    },
+    "factors": {
+      "type": "object",
+      "description": "Individual risk factors that contributed to the overall score",
+      "properties": {
+        "revenueImpact": {
+          "type": "string",
+          "description": "Assessment of potential revenue impact"
+        },
+        "userImpact": {
+          "type": "string",
+          "description": "Assessment of impact on end users"
+        },
+        "securityRisk": {
+          "type": "boolean",
+          "description": "Whether this area has known security risk"
+        },
+        "complianceRequired": {
+          "type": "boolean",
+          "description": "Whether regulatory or compliance requirements apply"
+        },
+        "previousFailure": {
+          "type": "boolean",
+          "description": "Whether this area has had failures in the past"
+        },
+        "complexity": {
+          "type": "string",
+          "description": "Assessment of implementation complexity"
+        },
+        "usage": {
+          "type": "string",
+          "description": "Assessment of how frequently this feature is used"
+        }
+      },
+      "required": [
+        "revenueImpact",
+        "userImpact",
+        "securityRisk",
+        "complianceRequired",
+        "previousFailure",
+        "complexity",
+        "usage"
+      ]
+    },
+    "acGaps": {
+      "type": "array",
+      "description": "Acceptance criteria that lack sufficient risk coverage",
+      "items": {
+        "type": "object",
+        "properties": {
+          "acceptanceCriteriaId": {
+            "type": "string",
+            "description": "ID of the acceptance criterion with the gap"
+          },
+          "description": {
+            "type": "string",
+            "description": "Description of what is missing"
+          }
+        },
+        "required": ["acceptanceCriteriaId", "description"]
+      }
+    }
+  },
+  "required": [
+    "score",
+    "probability",
+    "impact",
+    "priority",
+    "categories",
+    "action",
+    "justification",
+    "factors",
+    "acGaps"
+  ]
+}

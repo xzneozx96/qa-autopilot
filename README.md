@@ -11,7 +11,7 @@ QA Autopilot is a Claude Code skill that orchestrates a complete, multi-phase QA
 - [Claude Code](https://claude.ai/code) CLI
 - Claude API access (Sonnet + Opus)
 - Node.js 18+ (for Playwright)
-- Git (for the commit step)
+- [Playwright MCP](https://github.com/microsoft/playwright-mcp) (for live browser inspection in Phase 2)
 
 ## Installation
 

@@ -393,6 +393,57 @@ Two agents run concurrently after gate approval:
 
 ---
 
+### Knowledge consumption map
+
+The `knowledge/` folder holds 21 domain reference documents loaded on demand. Each sub-agent reads only what it needs — keeping `SKILL.md` files focused and token-efficient.
+
+| Knowledge file | Consumed by |
+|---|---|
+| `overview.md` | qa-adapter |
+| `playwright-config.md` | qa-adapter, qa-ci |
+| `selector-resilience.md` | qa-instrument, qa-explore, qa-live-explore, qa-execute, qa-review-heal, qa-visual |
+| `nfr-criteria.md` | qa-intake, qa-design |
+| `adr-quality-readiness-checklist.md` | qa-intake, qa-trace |
+| `fixture-architecture.md` | qa-explore, qa-generate |
+| `data-factories.md` | qa-explore, qa-generate |
+| `live-exploration.md` | qa-live-explore |
+| `probability-impact.md` | qa-risk |
+| `risk-governance.md` | qa-risk, qa-trace |
+| `test-priorities-matrix.md` | qa-risk, qa-design, qa-selective |
+| `test-levels-framework.md` | qa-design |
+| `network-first.md` | qa-generate |
+| `intercept-network-call.md` | qa-generate |
+| `execute-heal.md` | qa-execute |
+| `timing-debugging.md` | qa-execute, qa-review-heal |
+| `test-quality.md` | qa-review-heal |
+| `test-healing-patterns.md` | qa-review-heal |
+| `burn-in.md` | qa-ci |
+| `ci-burn-in.md` | qa-ci |
+| `selective-testing.md` | qa-selective |
+
+Inverted view — which agents each sub-agent pulls from:
+
+| Sub-agent | Knowledge loaded |
+|---|---|
+| qa-adapter | `overview`, `playwright-config` |
+| qa-instrument | `selector-resilience` |
+| qa-intake | `nfr-criteria`, `adr-quality-readiness-checklist` |
+| qa-visual | `selector-resilience` |
+| qa-explore | `selector-resilience`, `fixture-architecture`, `data-factories` |
+| qa-risk | `probability-impact`, `risk-governance`, `test-priorities-matrix` |
+| qa-live-explore | `live-exploration`, `selector-resilience` |
+| qa-design | `test-levels-framework`, `test-priorities-matrix`, `nfr-criteria` |
+| qa-generate | `network-first`, `data-factories`, `fixture-architecture`, `intercept-network-call` |
+| qa-execute | `execute-heal`, `selector-resilience`, `timing-debugging` |
+| qa-review-heal | `test-quality`, `test-healing-patterns`, `timing-debugging`, `selector-resilience` |
+| qa-trace | `risk-governance`, `adr-quality-readiness-checklist` |
+| qa-ci | `ci-burn-in`, `burn-in`, `playwright-config` |
+| qa-selective | `selective-testing`, `test-priorities-matrix` |
+
+> `selector-resilience` is the most shared file — 6 agents read it. It defines the selector quality hierarchy (`data-testid` → ARIA → text → CSS class) that the entire pipeline enforces.
+
+---
+
 ### Data contracts
 
 Every phase produces a typed JSON output that the next phase consumes. Schemas live in `schemas/` and are referenced by both the orchestrator and each sub-skill:
